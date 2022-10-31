@@ -1,0 +1,85 @@
+{
+  "softDelete": {
+    "$match" : {
+      "softDelete" : false
+    }
+  },
+  "membershipPlan":{
+  "$unwind" : {
+    "path" : "$membershipPlan"
+  }
+   },
+
+  "planNames":{
+  "$project" : {
+    "planName" : {
+      "$switch" : {
+        "branches" : [
+          {
+            "case" : {
+              "$eq" : [
+                "$membershipPlan.membershipPlan",
+                "LIFETIME"
+              ]
+            },
+            "then" : "01"
+          },
+          {
+            "case" : {
+              "$eq" : [
+                "$membershipPlan.membershipPlan",
+                "TWELVE_YEAR"
+              ]
+            },
+            "then" : "02"
+          },
+          {
+            "case" : {
+              "$eq" : [
+                "$membershipPlan.membershipPlan",
+                "SIX_YEAR"
+              ]
+            },
+            "then" : "03"
+          },
+          {
+            "case" : {
+              "$eq" : [
+                "$membershipPlan.membershipPlan",
+                "TWO_MONTH"
+              ]
+            },
+            "then" : "04"
+          }
+        ],
+        "default" : "none"
+      }
+    },
+    "_id" : 1.0,
+    "membershipName" : 1.0,
+    "date" : 1.0,
+    "membershipPlan" : 1.0
+  }
+},
+"groupPlanName": {
+  "$group" : {
+    "_id" : "$planName",
+    "membershipName" : {
+      "$first" : "$membershipName"
+    },
+    "planName" : {
+      "$first" : "$membershipPlan.membershipPlan"
+    },
+    "count" : {
+      "$sum" : 1.0
+    }
+  }
+},
+ "sorting":
+{
+"$sort" : {
+"_id" : 1.0
+}
+}
+
+}

@@ -1,0 +1,19 @@
+{
+  "match": {
+    "$match": {
+      "softDelete": false
+    }
+  },
+  "groupById": {
+    "$group": {
+      "_id": "$studentId",
+      "bookData": {
+        "$push": {
+          "bookName": "$bookName",
+          "price": "$price",
+          "date": "$date"
+        }
+      }
+    }
+  }
+}

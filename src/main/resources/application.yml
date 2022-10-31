@@ -1,0 +1,47 @@
+server:
+  port: 5001
+spring:
+  main:
+    allow-circular-references: true
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/auth
+
+  mail:
+    host: smtp.office365.com
+    port: 587
+    username: dency.g@techroversolutions.com
+    password: Rakshit@05
+    properties:
+      mail.smtp.auth=true
+      mail.smtp.starttls.enable=true
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+  rabbitmq:
+    host: localhost
+    password: guest
+    username: guest
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG
+trs:
+  defaults:
+    timezone: CST
+    prefetchCount: 1
+    concurrentConsumers: 1
+
+
+rmq:
+  userSend:
+    queueName: userDetail
+    exchangeName: user.exchange
+    routingKey: user.userSend

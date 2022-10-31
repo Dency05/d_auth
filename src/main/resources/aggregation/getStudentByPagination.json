@@ -1,0 +1,49 @@
+{
+  "match": {
+    "$match": {
+      "softDelete": false
+    }
+  },
+  "lookupById": {
+    "$lookup": {
+      "from": "student",
+      "let": {
+        "student": "$studentId"
+      },
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$and": [
+                {
+                  "$eq": [
+                    {
+                      "$toString": "$_id"
+                    },
+                    "$$student"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "as": "student_detail"
+    }
+  },
+  "unwindStudent": {
+    "$unwind": {
+      "path": "$student_detail"
+    }
+  },
+  "studentData": {
+    "$project": {
+      "studentName": "$student_detail.fullName",
+      "studentId": 1.0,
+      "price": 1.0,
+      "date": 1.0,
+      "balance": 1.0,
+      "bookName": 1.0
+    }
+  }
+}

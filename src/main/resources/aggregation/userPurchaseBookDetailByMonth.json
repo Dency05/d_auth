@@ -1,0 +1,104 @@
+{
+  "match": {
+    "$match": {
+      "softDelete": false
+    }
+  },
+  "lookUpOnStudent": {
+    "$lookup": {
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$and": [
+                {
+                  "$eq": [
+                    {
+                      "$toString": "$_id"
+                    },
+                    "$$student"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "as": "student_detail",
+      "from": "student",
+      "let": {
+        "student": "$studentId"
+      }
+    }
+  },
+  "unwindStudent": {
+    "$unwind": {
+      "path": "$student_detail"
+    }
+  },
+  "extractMonth": {
+    "$set": {
+      "dateOfMonth": {
+        "$substr": [
+          "$date",
+          5.0,
+          2.0
+        ]
+      }
+    }
+  },
+  "groupBy": {
+    "$group": {
+      "_id": {
+        "month": "$dateOfMonth",
+        "studentId": "$studentId",
+        "bookName": "$bookName"
+      },
+      "studentData": {
+        "$push": {
+          "studentId": "$studentId",
+          "bookName": "$bookName",
+          "price": "$price",
+          "month": "$dateOfMonth"
+        }
+      },
+      "count": {
+        "$sum": 1.0
+      },
+      "studentName": {
+        "$first": "$student_detail.fullName"
+      },
+      "price": {
+        "$first": "$price"
+      },
+      "totalPrice": {
+        "$sum": "$price"
+      }
+    }
+  },
+  "groupByMonth": {
+    "$group": {
+      "_id": "$_id.month",
+      "studentData": {
+        "$push": {
+          "studentId": "$_id.studentId",
+          "bookName": "$_id.bookName",
+          "bookCount": {
+            "$sum": "$count"
+          },
+          "price": "$price",
+          "totalPrice": {
+            "$sum": "$totalPrice"
+          },
+          "studentName": "$studentName"
+        }
+      },
+      "count": {
+        "$sum": 1.0
+      },
+      "month": {
+        "$first": "$_id.month"
+      }
+    }
+  }
+}

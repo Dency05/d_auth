@@ -1,0 +1,167 @@
+{
+  "softDelete": {
+    "$match" : {
+       "softDelete" : false
+    }
+  },
+  "extractMonth&Year": {
+  "$set" : {
+    "dateOfMonth" : {
+      "$substr" : [
+        "$date",
+        5.0,
+        2.0
+      ]
+    },
+    "dateOfYear" : {
+      "$substr" : [
+        "$date",
+        0.0,
+        4.0
+      ]
+    }
+  }
+  },
+  "setMonthName": {
+    "$project" : {
+      "firstName" : 1.0,
+      "month" : {
+        "$switch" : {
+          "default" : "none",
+          "branches" : [
+            {
+              "then" : "1",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "01"
+                ]
+              }
+            },
+            {
+              "then" : "2",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "02"
+                ]
+              }
+            },
+            {
+              "then" : "3",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "03"
+                ]
+              }
+            },
+            {
+              "then" : "4",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "04"
+                ]
+              }
+            },
+            {
+              "then" : "5",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "05"
+                ]
+              }
+            },
+            {
+              "then" : "6",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "06"
+                ]
+              }
+            },
+            {
+              "then" : "7",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "07"
+                ]
+              }
+            },
+            {
+              "then" : "8",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "08"
+                ]
+              }
+            },
+            {
+              "then" : "9",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "09"
+                ]
+              }
+            },
+            {
+              "then" : "10",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "10"
+                ]
+              }
+            },
+            {
+              "then" : "11",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "11"
+                ]
+              }
+            },
+            {
+              "then" : "12",
+              "case" : {
+                "$eq" : [
+                  "$dateOfMonth",
+                  "12"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "dateOfMonth" : 1.0,
+      "_id" : 1.0
+    }
+},
+  "user": {
+    "$group" : {
+      "_id" : "$month",
+      "userIds" : {
+        "$push" : {
+          "$toString" : "$_id"
+        }
+      },
+      "month" : {"$first":"$month"},
+      "dateOfMonth": {"$first": "$dateOfMonth"},
+      "count" : {
+        "$sum" : 1.0
+      }
+    }
+  },
+  "sortByMonth": {
+  "$sort" : {
+    "month" : 1.0
+  }
+  }
+}

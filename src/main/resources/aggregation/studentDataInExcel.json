@@ -1,0 +1,58 @@
+{
+  "match": {
+    "$match": {
+      "softDelete": false
+    }
+  },
+  "mergeData": {
+    "$lookup": {
+      "pipeline": [
+        {
+          "$match": {
+            "$expr": {
+              "$and": [
+                {
+                  "$eq": [
+                    {
+                      "$toString": "$_id"
+                    },
+                    "$$student"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "as": "student_detail",
+      "from": "student",
+      "let": {
+        "student": "$studentId"
+      }
+    }
+  },
+  "unwindStudent": {
+    "$unwind": {
+      "path": "$student_detail"
+    }
+  },
+  "groupByBookName": {
+    "$group": {
+      "_id": "$bookName",
+      "bookData": {
+        "$push": {
+          "studentId": "$studentId",
+          "date" : {
+            "$dateToString" : {
+              "format" : "%m/%d/%Y",
+              "date" : "$date",
+              "timezone": "America/Chicago"
+            }
+          },
+          "price": "$price",
+          "studentName": "$student_detail.fullName"
+        }
+      }
+    }
+  }
+}

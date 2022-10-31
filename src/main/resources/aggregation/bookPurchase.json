@@ -1,0 +1,75 @@
+{
+  "extractMonth&Year": {
+    "$set": {
+      "dateOfMonth": {
+        "$substr": [
+          "$date",
+          5.0,
+          2.0
+        ]
+      },
+      "dateOfYear": {
+        "$substr": [
+          "$date",
+          0.0,
+          4.0
+        ]
+      }
+    }
+  },
+  "year": {
+    "$match": {
+      "dateOfYear": "2022"
+    }
+  },
+  "groupByMonth": {
+    "$group": {
+      "_id": {
+        "month": "$dateOfMonth",
+        "bookName": "$bookName"
+      },
+      "studentIds": {
+        "$push": "$studentId"
+      },
+      "count": {
+        "$sum": 1.0
+      }
+    }
+  },
+  "groupByBookName": {
+    "$group": {
+      "_id": "$_id.bookName",
+      "bookData": {
+        "$push": {
+          "month": "$_id.month",
+          "count": {
+            "$size": "$studentIds"
+          },
+          "studentIds": "$studentIds"
+        }
+      }
+    }
+  },
+  "bookData": {
+    "$unwind": {
+      "path": "$bookData"
+    }
+  },
+  "groupByMonths": {
+    "$group": {
+      "_id": "$bookData.month",
+      "month": {
+        "$first": "$bookData.month"
+      },
+      "bookDetails": {
+        "$push": {
+          "bookName": "$_id",
+          "count": "$bookData.count"
+        }
+      },
+      "totalCount" : {
+        "$sum" : "$price"
+      }
+    }
+  }
+}
